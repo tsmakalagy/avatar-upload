@@ -1,0 +1,406 @@
+<!DOCTYPE HTML>
+<!--
+/*
+ * jQuery File Upload Plugin Demo 9.0.0
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2010, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+-->
+<html lang="en">
+<head>
+<!-- Force latest IE rendering engine or ChromeFrame if installed -->
+<!--[if IE]>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<![endif]-->
+<meta charset="utf-8">
+<title>Godana file upload</title>
+<meta name="description" content="File Upload widget with multiple file selection, drag&amp;drop support, progress bars, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads and client-side image resizing. Works with any server-side platform (PHP, Python, Ruby on Rails, Java, Node.js, Go etc.) that supports standard HTML form file uploads.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Bootstrap styles -->
+<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+<link href="assets/css/bootstrap-responsive.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/font-awesome.min.css" />
+
+
+<!--<link rel="stylesheet" href="assets/css/ace.css" />
+<link rel="stylesheet" href="assets/css/ace-responsive.min.css" />
+<link rel="stylesheet" href="assets/css/ace-skins.min.css" />-->
+
+
+<!-- Generic page styles -->
+<link rel="stylesheet" href="css/style.css">
+
+<!-- blueimp Gallery styles -->
+<link rel="stylesheet" href="css/blueimp-gallery.min.css">
+
+<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+<link rel="stylesheet" href="css/jquery.fileupload.css">
+<link rel="stylesheet" href="css/jquery.fileupload-ui.css">
+
+<link rel="stylesheet" href="css/jquery.Jcrop.css">
+
+<!-- CSS adjustments for browsers with JavaScript disabled -->
+<noscript><link rel="stylesheet" href="css/jquery.fileupload-noscript.css"></noscript>
+<noscript><link rel="stylesheet" href="css/jquery.fileupload-ui-noscript.css"></noscript>
+
+
+<style type="text/css">
+
+/* Apply these styles only when #preview-pane has
+   been placed within the Jcrop widget */
+.jcrop-holder #preview-pane {
+  display: block;
+  position: absolute;
+  z-index: 2000;
+  top: -7px;
+  right: -151px;
+  padding: 6px;
+  border: 1px rgba(0,0,0,.4) solid;
+  background-color: white;
+
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+
+  -webkit-box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* The Javascript code will set the aspect ratio of the crop
+   area based on the size of the thumbnail preview,
+   specified here */
+#preview-pane .preview-container {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+    
+    
+    <!-- The file upload form used as target for the file upload widget -->
+    
+        <!-- Redirect browsers with JavaScript disabled to the origin page -->
+        <noscript><input type="hidden" name="redirect" value="http://blueimp.github.io/jQuery-File-Upload/"></noscript>
+        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+        <div class="row fileupload-buttonbar">
+            <div class="span7">
+		<a href="#" class="btn btn-success fileinput-button show-modal">
+		    <i class="glyphicon glyphicon-plus"></i>
+		    Add images
+		</a>
+                
+            </div>
+        </div>
+       
+</div>
+
+
+
+<div class="modal hide fade" id="uploadModal">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="blue">Change Avatar</h4>
+	</div>
+	
+	<form class="no-margin" id="fileupload" action="" method="POST" enctype="multipart/form-data">
+	<div class="modal-body">
+		<div class="space-4"></div>
+		<div style="width:75%;margin-left:12%;">
+		    <div class="gdn-file-input gdn-file-multiple">
+			<input type="file" name="files[]" id="input_file">
+			<label data-title="Click to choose new avatar">
+			    <span data-title="No File ..."><i class="icon-picture"></i></span>
+			</label>
+			<a href="#" class="remove"><i class="icon-remove"></i></a>
+		    </div>
+		    <div class="gdn-file-preview">
+			<div class="files"></div>
+		    </div>
+		</div>
+	</div>
+	
+	<div class="modal-footer center">
+		<button type="button" class="btn btn-small btn-success submit-button"><i class="icon-ok"></i> Submit</button>
+		<button type="button" class="btn btn-small" data-dismiss="modal"><i class="icon-remove"></i> Cancel</button>
+	</div>
+	</form>
+</div>
+
+
+<!-- The blueimp Gallery widget -->
+<div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls" data-filter=":even">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+</div>
+<!-- The template to display files available for upload -->
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <div class="template-upload">
+	<span class="preview"></span>
+	<strong class="error red"></strong>
+	<p class="size">Processing...</p>
+        <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar progress-bar-success" style="width:0%;"></div></div>
+	{% if (!i && !o.options.autoUpload) { %}
+                <button class="btn btn-primary start" disabled>
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>Start</span>
+                </button>
+            {% } %}
+            {% if (!i) { %}
+                <button class="btn btn-warning cancel btn-upload-cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel</span>
+                </button>
+            {% } %}
+    </div>
+{% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <div class="template-download gdn-dashed">
+	    {% if (file.error) { %}
+                <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+            {% } %}     
+            {% if (file.deleteUrl) { %}
+                <a href="#" class="delete delete-image remove" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                    <i class="icon-remove bigger-230"></i>
+                </a>
+            {% } else { %}
+                <button class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel</span>
+                </button>
+            {% } %}     
+	<span class="preview">
+	    {% if (file.mediumUrl) { %}
+		<span class="profile-picture"><img src="{%=file.mediumUrl%}" id="target"></span>
+	    {% } %}
+	</span> 
+	<div id="preview-pane" class="hide">
+	    <div class="preview-container">
+	      <img src="{%=file.mediumUrl%}" class="jcrop-preview" alt="Preview" />
+	    </div>	    
+	</div>       
+        <button class="btn btn-danger crop-button hide" type="button">Crop</button>  
+    </div>
+{% } %}
+</script>
+<script src="js/jquery.min.js"></script>
+<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+<script src="js/vendor/jquery.ui.widget.js"></script>
+<!-- The Templates plugin is included to render the upload/download listings -->
+<script src="js/tmpl.min.js"></script>
+<!-- The Load Image plugin is included for the preview images and image resizing functionality -->
+<script src="js/load-image.min.js"></script>
+<!-- The Canvas to Blob plugin is included for image resizing functionality -->
+<script src="js/canvas-to-blob.min.js"></script>
+<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
+<script src="assets/js/bootstrap.min.js"></script>
+<!-- blueimp Gallery script -->
+<script src="js/jquery.blueimp-gallery.min.js"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="js/jquery.iframe-transport.js"></script>
+<!-- The basic File Upload plugin -->
+<script src="js/jquery.fileupload.js"></script>
+<!-- The File Upload processing plugin -->
+<script src="js/jquery.fileupload-process.js"></script>
+<!-- The File Upload image preview & resize plugin -->
+<script src="js/jquery.fileupload-image.js"></script>
+<!-- The File Upload audio preview plugin -->
+<script src="js/jquery.fileupload-audio.js"></script>
+<!-- The File Upload video preview plugin -->
+<script src="js/jquery.fileupload-video.js"></script>
+<!-- The File Upload validation plugin -->
+<script src="js/jquery.fileupload-validate.js"></script>
+<!-- The File Upload user interface plugin -->
+<script src="js/jquery.fileupload-ui.js"></script>
+<script src="js/jquery.Jcrop.js"></script>
+<!--<script src="assets/js/ace-elements.min.js"></script>
+<script src="assets/js/ace.min.js"></script>-->
+
+<!-- The main application script -->
+<script src="js/main.js"></script>
+<script src="assets/js/upload.godana.js"></script>
+
+<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE 8 and IE 9 -->
+<!--[if (gte IE 8)&(lt IE 10)]>
+<script src="js/cors/jquery.xdr-transport.js"></script>
+<![endif]-->
+<script type="text/javascript">
+$(function () {
+    /*var $label = $('.gdn-file-input label');
+    var jcrop_api,
+        boundx,
+        boundy,
+        $preview,
+        $pcnt,
+        $pimg,
+	xsize,
+	ysize;
+    var d = {};
+    var cropCoordinates = {};
+    d.x = 0;
+    d.y = 0;
+    d.w = 100;
+    d.h = 100;
+    $label.on("click", function () {
+	$('#input_file').click();
+    });
+
+    $(document).on('click', '.btn-upload-cancel', function() {
+	$('.gdn-file-input').show();
+    });
+
+    $(document).on('click', '.delete-image', function() {
+	$('.gdn-file-input').show();
+    });
+
+    disableSubmit();
+
+    var modal = $('#uploadModal');
+    modal.on("hidden", function(){
+	
+	if (jcrop_api != undefined) {	
+	    jcrop_api.release();
+	    updatePreview(d);
+	}
+	$('.files').html('');
+	$('.gdn-file-input').show();
+	disableSubmit();
+    });
+
+    $('#fileupload').fileupload({
+        // Uncomment the following to send cross-domain cookies:
+        //xhrFields: {withCredentials: true},
+        maxFileSize: 2000000,
+        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+        url: 'server/php/'
+    }).on('fileuploadadd', function() {
+        $('.gdn-file-input').hide();
+    }).on('fileuploadalways', function(e, data) {
+	var files = data.result.files;
+	if (files.length) {
+	    for (var i=0, file; file=files[i]; i++) {
+		$preview = $('#preview-pane');
+		$pcnt = $('#preview-pane .preview-container');
+		$pimg = $('#preview-pane .preview-container img');
+		xsize = $pcnt.width();
+		ysize = $pcnt.height();
+		cropCoordinates.source = {};
+		cropCoordinates.source.file = file.url;    
+		/*$('#target').Jcrop({
+		  onChange: updatePreview,
+		  onSelect: updatePreview,
+		  onRelease: disableSubmit,
+		  aspectRatio: xsize / ysize
+		},function(){
+		  // Use the API to get the real image size
+		    var bounds = this.getBounds();
+		    boundx = bounds[0];
+		    boundy = bounds[1];
+		      // Store the API in the jcrop_api variable
+		    jcrop_api = this;
+		    cropCoordinates.source.width = boundx;
+		    cropCoordinates.source.height = boundy;
+		      // Move the preview into the jcrop container for css positioning
+		    $preview.appendTo(jcrop_api.ui.holder);
+		    
+		});*/
+	   /* }
+	    
+	}
+        
+    });
+
+
+    $('.show-modal').click(function(e) {
+	$('#uploadModal').modal('show').on('shown', function() {*/
+	    /*$preview = $('#preview-pane');
+	    $pcnt = $('#preview-pane .preview-container');
+	    $pimg = $('#preview-pane .preview-container img');
+	    xsize = $pcnt.width();
+	    ysize = $pcnt.height();
+	    $('#target').Jcrop({
+	      onChange: updatePreview,
+	      onSelect: updatePreview,
+	      aspectRatio: xsize / ysize
+	    },function(){
+	      // Use the API to get the real image size
+	      var bounds = this.getBounds();
+	      boundx = bounds[0];
+	      boundy = bounds[1];
+	      // Store the API in the jcrop_api variable
+	      jcrop_api = this;
+
+	      // Move the preview into the jcrop container for css positioning
+	      $preview.appendTo(jcrop_api.ui.holder);
+	    });*/
+	/*});
+	return false;
+    });
+
+$(document).on('click', '.crop-image', function(e) {
+    e.preventDefault();
+    if (jcrop_api != undefined) {	
+	$.post(
+	    'server/php/image_crop_and_size.php',
+	    cropCoordinates,
+	    function() {
+		//$('#uploadModal').modal('hide');
+	    }
+	);
+    }
+    return false;
+});
+    function disableSubmit() 
+    {
+	$('.submit-button').prop('disabled', true);
+    }
+
+    function enableSubmit() 
+    {
+	$('.submit-button').prop('disabled', false);
+    }
+
+    function updatePreview(c)
+    {
+	if (parseInt(c.w) > 0) {
+	    var rx = xsize / c.w;
+	    var ry = ysize / c.h;
+
+	    $pimg.css({
+	      width: Math.round(rx * boundx) + 'px',
+	      height: Math.round(ry * boundy) + 'px',
+	      marginLeft: '-' + Math.round(rx * c.x) + 'px',
+	      marginTop: '-' + Math.round(ry * c.y) + 'px'
+	    });
+	    cropCoordinates.c=c;
+	    enableSubmit();
+	}
+    };*/
+
+    $('.show-modal').imageupload({doCrop: false});
+});
+</script>
+</body> 
+</html>
