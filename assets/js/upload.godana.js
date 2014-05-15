@@ -47,9 +47,12 @@
 		   showFileInputWrapper();
 		});
 
-		$(document).on('click', '.delete-image', function() {
+		/*$(document).on('click', '.delete-image', function() {
 		    showFileInputWrapper();		    
-		});
+		});*/
+        $('#'+settings.formId).bind('fileuploaddestroyed', function (e, data) {
+            showFileInputWrapper();		    
+        });
 
 		$('#'+settings.formId).fileupload({
 		    maxFileSize: 2000000,
@@ -62,6 +65,7 @@
 			if (files.length) {
 			    for (var i=0, file; file=files[i]; i++) {
 				if (settings.doCrop) {
+                    $('.preview').addClass('preview-cropped');
 				    $preview = $('#preview-pane');
 				    $preview.removeClass('hide');
 				    $('.'+settings.cropButton).removeClass('hide');
@@ -179,14 +183,14 @@
     };
 
     var modal = $('#'+options.modalId);
-    modal.on("hidden", function(){
-	
-	if (jcrop_api != undefined) {	
-	    jcrop_api.release();
-	    updatePreview(d);
-	}
-	$('.files').html('');
-	$('.'+options.fileInputWrapper).show();
-	disableSubmit();
+    modal.on("hidden", function(){	
+        if (jcrop_api != undefined) {	
+            jcrop_api.release();
+            updatePreview(d);
+        }
+        $('.files').html('');
+        $('.'+options.fileInputWrapper).show();
+        disableSubmit();
+        $('.preview').removeClass('preview-cropped');
     });
 })(jQuery);
