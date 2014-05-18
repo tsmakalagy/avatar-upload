@@ -105,7 +105,7 @@
                 
             </div>
         </div>
-       
+       <div class="profile-picture img-preview hide"></div>
 </div>
 
 
@@ -121,8 +121,9 @@
 		<div class="space-4"></div>
 		<div style="width:75%;margin-left:12%;">
 		    <div class="gdn-file-input gdn-file-multiple">
-			<input type="file" name="files[]" id="input_file">
+			
 			<label data-title="Click to choose new avatar">
+                <input type="file" name="files[]" id="input_file">
 			    <span data-title="No File ..."><i class="icon-picture"></i></span>
 			</label>
 			<a href="#" class="remove"><i class="icon-remove"></i></a>
@@ -131,6 +132,17 @@
 			<div class="files"></div>
 		    </div>
 		</div>
+        <!--<div style="width:75%;margin-left:12%;">
+            <label class="gdn-file-input gdn-file-multiple">
+                <input type="file" name="files[]" id="input_file">
+                <span data-title="Click to choose new avatar" class="gdn-file-container">
+                    <span data-title="No File ..." class="gdn-file-name">
+                        <i class="icon-picture"></i>
+                    </span>
+                </span>
+                <a href="#" class="remove"><i class="icon-remove"></i></a>
+            </label>
+        </div>-->
 	</div>
 	
 	<div class="modal-footer center">
@@ -200,8 +212,7 @@
 	    <div class="preview-container">
 	      <img src="{%=file.mediumUrl%}" class="jcrop-preview" alt="Preview" />
 	    </div>	    
-	</div>       
-        <button class="btn btn-danger crop-button hide" type="button">Crop</button>  
+	</div>               
     </div>
 {% } %}
 </script>

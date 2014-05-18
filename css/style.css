@@ -15,7 +15,7 @@ body {
 }
 
 .preview-cropped {
-    margin-right: 80px;
+    margin-right: 138px;
 }
 
 .modal-lg {
@@ -234,7 +234,8 @@ width: 17px;
 }
 .gdn-file-multiple label: before {
 	display: inline-block;
-	content: attr(data-title);
+	/*content: attr(data-title);*/
+    content: 'Hello World';
 	position: relative;
 	right: 0;
 	left: 0;
@@ -383,4 +384,101 @@ width: 17px;
 }
 .gdn-file-multiple input[type=file].disabled+label [class*="icon-"],.gdn-file-multiple input[type=file][disabled]+label [class*="icon-"],.gdn-file-multiple input[type=file][readonly]+label [class*="icon-"] {
 	border-color: #EEE
+}
+
+.gdn-file-multiple .gdn-file-container:before {
+    background-color: #FFFFFF;
+    border-width: 0;
+    color: #CCCCCC;
+    content: attr(data-title);
+    display: inline-block;
+    font-size: 18px;
+    font-weight: bold;
+    left: 0;
+    line-height: 22px;
+    margin: 12px;
+    position: relative;
+    right: 0;
+}
+.gdn-file-input .gdn-file-container:before {
+    -moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #6FB3E0;
+    border-color: #FFFFFF;
+    border-style: solid;
+    border-width: 2px 2px 2px 4px;
+    bottom: 0;
+    color: #FFFFFF;
+    content: attr(data-title);
+    display: inline-block;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 24px;
+    padding: 0 8px;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+}
+.gdn-file-multiple .gdn-file-container {
+    border: 1px dashed #AAAAAA;
+    border-radius: 4px 4px 4px 4px;
+    height: auto;
+    position: relative;
+    text-align: center;
+}
+.gdn-file-input .gdn-file-container {
+    background-color: #FFFFFF;
+    border: 1px solid #D5D5D5;
+    box-shadow: none;
+    cursor: pointer;
+    display: block;
+    height: 30px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.gdn-file-multiple .gdn-file-container .gdn-file-name:after {
+    display: none;
+}
+.gdn-file-input .gdn-file-container .gdn-file-name:after {
+    content: attr(data-title);
+    display: inline-block;
+}
+
+.gdn-file-multiple .gdn-file-container .gdn-file-name:last-child {
+    border-bottom-width: 0;
+    margin-bottom: 1px;
+}
+.gdn-file-multiple .gdn-file-container .gdn-file-name:first-child {
+    margin-top: 1px;
+}
+.gdn-file-multiple .gdn-file-container .gdn-file-name {
+    border-bottom: 1px solid #DDDDDD;
+    display: block;
+    height: auto;
+    margin: 0 4px;
+    max-width: 100%;
+    padding: 0;
+    position: relative;
+    text-align: left;
+    width: auto;
+}
+.gdn-file-input .gdn-file-container .gdn-file-name {
+    color: #888888;
+    display: inline-block;
+    font-size: 13px;
+    height: 28px;
+    line-height: 28px;
+    max-width: 80%;
+    overflow: hidden;
+    padding-left: 30px;
+    position: static;
+    vertical-align: top;
+    white-space: nowrap;
 }

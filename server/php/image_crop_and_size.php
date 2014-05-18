@@ -14,8 +14,12 @@ echo '
 <br>dire: '.substr( $upload_handler->getOption('relative_upload_dir'). urldecode(array_pop(array_splice(explode('/','http://localhost/jQuery-File-Upload-and-Crop/server/php/files/DSC02004%20-%20agaricus%20arvensis.JPG'),-1))),1).'
 <br>isfile:'.is_file( substr( $upload_handler->getOption('relative_upload_dir'). urldecode(array_pop(array_splice(explode('/','http://localhost/jQuery-File-Upload-and-Crop/server/php/files/DSC02004%20-%20agaricus%20arvensis.JPG'),-1))),1) ).'
 <br>';*/
+
+$newUrl = '';
+$source = array();
+
 if(isset($_POST['source'])){
-	$source = $_POST['source'];
+	$source = $_POST['source'];    
 	$thePicture = substr( $upload_handler->getOption('relative_upload_dir'). urldecode(array_pop(array_splice(explode('/',$_POST['source']['file']),-1))),1);
 	$uploadPath = substr($thePicture, 0, strrpos($thePicture, '/'));
 	$cacheFolder = $uploadPath . '/cropped/';
@@ -63,7 +67,7 @@ switch( $type )
 		break;
 }
 
-$newFile = $lii->genImage(array(
+$file24 = $lii->genImage(array(
 	'url'=>$thePicture,
 	//'width'=>$_POST['source']['endWidth'],
 	'width'=>24,
@@ -76,7 +80,7 @@ $newFile = $lii->genImage(array(
 	'ch' => floor($_POST['c']['h']*$sizeRatio)
 	));
 
-$newFile = $lii->genImage(array(
+$file60 = $lii->genImage(array(
 	'url'=>$thePicture,
 	//'width'=>$_POST['source']['endWidth'],
 	'width'=>60,
@@ -89,7 +93,7 @@ $newFile = $lii->genImage(array(
 	'ch' => floor($_POST['c']['h']*$sizeRatio)
 	));
 
-$newFile = $lii->genImage(array(
+$file40 = $lii->genImage(array(
 	'url'=>$thePicture,
 	//'width'=>$_POST['source']['endWidth'],
 	'width'=>40,
@@ -112,6 +116,6 @@ $newFile = $lii->genImage(array(
 	//'height' => 60//,
 	//'crop' => false
 	));*/
-
-echo json_encode(array('newFile'=>$newFile));
+$newUrl = preg_replace("|files/.*$|", $file60, $source['file']);
+echo json_encode(array('newFile'=>$file40, 'url' => $newUrl));
 ?>
