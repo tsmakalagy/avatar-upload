@@ -64,6 +64,7 @@
                 var files = data.result.files;
                 if (files.length) {
                     for (var i=0, file; file=files[i]; i++) {
+			var f = file;
                         if (settings.doCrop) {
                             $('.preview').addClass('preview-cropped');
                             $preview = $('#preview-pane');
@@ -93,20 +94,28 @@
                                 $preview.appendTo(jcrop_api.ui.holder);
 
                             });
-                            /*$(document).on('click', '.'+settings.cropButton, function(e) {
-                                if (jcrop_api != undefined) {	
-                                    $.post(
-                                        settings.cropUrl,
-                                        cropCoordinates,
-                                        function() {
-                                            //$('#uploadModal').modal('hide');
-                                        }
-                                    );
-                                }
-                                return false;
-                            });*/
+			    $(document).on('click', '.'+settings.submitButton, function(e) {
+				if (jcrop_api != undefined) {	
+				    $.ajax({
+					url: settings.cropUrl,
+					data: cropCoordinates,
+					type: 'POST',
+					dataType: 'JSON',
+					success: function(data) {
+					    $img = '<img src="'+data.images.image_40+'" alt="Profile picture" />'
+					    $('.'+settings.imgPreview).html($img);
+					    $('#'+settings.modalId).modal('hide');
+					}
+				    });
+				}
+			    });
                         } else {
                             enableSubmit();
+			    $(document).on('click', '.'+settings.submitButton, function(e) {
+				$img = '<img src="'+f.thumbnailUrl+'" alt="Profile picture" />'
+				$('.'+settings.imgPreview).html($img);
+				$('#'+settings.modalId).modal('hide');
+			    });
                         }
                     }
                 }			
@@ -194,23 +203,7 @@
         $('.preview').removeClass('preview-cropped');
     });
     
-    $(document).on('click', '.'+options.submitButton, function(e) {
-        if (options.doCrop) {
-            if (jcrop_api != undefined) {	
-                $.ajax({
-                    url: options.cropUrl,
-                    data: cropCoordinates,
-                    type: 'POST',
-                    dataType: 'JSON',
-                    success: function(data) {
-                        $img = '<img src="'+data.url+'" alt="Profile picture" />'
-                        $('.'+options.imgPreview).html($img);
-                        $('#'+options.modalId).modal('hide');
-                    }
-                });
-            }
-        }
-    });
+    
     
     
 })(jQuery);

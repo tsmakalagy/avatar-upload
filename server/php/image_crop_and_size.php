@@ -66,8 +66,28 @@ switch( $type )
 		$ft = 'png';
 		break;
 }
+$w = array();
+$w['24'] = 24;
+$w['40'] = 40;
+$w['60'] = 60;
+$images = array();
+foreach ($w as $wd) {
+	$return = $lii->genImage(array(
+	'url'=>$thePicture,
+	//'width'=>$_POST['source']['endWidth'],
+	'width'=>$wd,
+	//'height'=>$_POST['source']['endHeight'],
+	'oc' => '1',
+	'ft' => $ft,
+	'cx' => floor($_POST['c']['x']*$sizeRatio),
+	'cy' => floor($_POST['c']['y']*$sizeRatio),
+	'cw' => floor($_POST['c']['w']*$sizeRatio),
+	'ch' => floor($_POST['c']['h']*$sizeRatio)
+	));
+	$images['image_'.$wd] = preg_replace("|files/.*$|", $return, $source['file']);
+}
 
-$file24 = $lii->genImage(array(
+/*$file24 = $lii->genImage(array(
 	'url'=>$thePicture,
 	//'width'=>$_POST['source']['endWidth'],
 	'width'=>24,
@@ -105,7 +125,7 @@ $file40 = $lii->genImage(array(
 	'cw' => floor($_POST['c']['w']*$sizeRatio),
 	'ch' => floor($_POST['c']['h']*$sizeRatio)
 	));
-
+*/
 //$lii2 = new LiquenImg();
 /*$thumb = $lii->genImage(array(
 	'url' =>  $newFile,
@@ -116,6 +136,5 @@ $file40 = $lii->genImage(array(
 	//'height' => 60//,
 	//'crop' => false
 	));*/
-$newUrl = preg_replace("|files/.*$|", $file60, $source['file']);
-echo json_encode(array('newFile'=>$file40, 'url' => $newUrl));
+echo json_encode(array('images' => $images));
 ?>
